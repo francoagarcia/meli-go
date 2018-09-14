@@ -3,7 +3,7 @@ package service_test
 import (
 	"testing"
 
-	"github.com/francoagarcia/mi-twitter/src/service"
+	"github.com/francoagarcia/meli-go/src/service"
 )
 
 func TestPublishedTweetIsSaved(t *testing.T) {
