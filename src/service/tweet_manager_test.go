@@ -24,7 +24,7 @@ func TestMapToSlice(t *testing.T) {
 
 	// Validation
 	if !tweets[0].Equals(mapToSliceTweets[0]) {
-		t.Errorf("Expected both tweets are the same. Tweet1: [%b]. Tweet2: [%b]", tweets[0].ID, mapToSliceTweets[0].ID)
+		t.Errorf("Expected both tweets been the same. Tweet 1: [%b]. Tweet 2: [%b]", tweets[0].ID, mapToSliceTweets[0].ID)
 	}
 }
 func TestNoSeEncuentraTweet(t *testing.T) {
