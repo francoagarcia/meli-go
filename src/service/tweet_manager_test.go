@@ -10,6 +10,8 @@ import (
 func TestPublishedTweetIsSaved(t *testing.T) {
 
 	// Initialization
+	service.InitializeService()
+
 	var tweet *domain.Tweet
 
 	user := "francoagarcia"
@@ -18,26 +20,19 @@ func TestPublishedTweetIsSaved(t *testing.T) {
 	tweet = domain.NewTweet(user, text)
 
 	// Operation
-	service.PublishTweet(tweet)
+	id, _ := service.PublishTweet(tweet)
 
 	// Validation
 	publishedTweet := service.GetTweet()
 
-	if publishedTweet.User != user &&
-		publishedTweet.Text != text {
-		t.Errorf("Expected tweet is %s: %s \nbut is %s: %s",
-			user, text, publishedTweet.User, publishedTweet.Text)
-	}
-
-	if publishedTweet.Date == nil {
-		t.Error("Expected date can't be nil")
-	}
-
+	isValidTweet(t, publishedTweet, id, user, text)
 }
 
 func TestTweetWithoutUserIsNotPublished(t *testing.T) {
 
 	// Initialization
+	service.InitializeService()
+
 	var tweet *domain.Tweet
 
 	var user string
@@ -47,7 +42,7 @@ func TestTweetWithoutUserIsNotPublished(t *testing.T) {
 
 	// Operation
 	var err error
-	err = service.PublishTweet(tweet)
+	_, err = service.PublishTweet(tweet)
 
 	// Validation
 	if err != nil && err.Error() != "user is required" {
@@ -58,6 +53,8 @@ func TestTweetWithoutUserIsNotPublished(t *testing.T) {
 func TestTweetWithoutTextIsNotPublished(t *testing.T) {
 
 	// Initialization
+	service.InitializeService()
+
 	var tweet *domain.Tweet
 
 	user := "francoagarcia"
@@ -67,7 +64,7 @@ func TestTweetWithoutTextIsNotPublished(t *testing.T) {
 
 	// Operation
 	var err error
-	err = service.PublishTweet(tweet)
+	_, err = service.PublishTweet(tweet)
 
 	// Validation
 	if err == nil {
@@ -83,9 +80,11 @@ func TestTweetWithoutTextIsNotPublished(t *testing.T) {
 func TestTweetWhichExceeding140CharactersIsNotPublished(t *testing.T) {
 
 	// Initialization
+	service.InitializeService()
+
 	var tweet *domain.Tweet
 
-	user := "grupoesfera"
+	user := "francoagarcia"
 	text := `The Go project has grown considerably with over half a million users and community members 
 	all over the world. To date all community oriented activities have been organized by the community
 	with minimal involvement from the Go project. We greatly appreciate these efforts`
@@ -94,7 +93,7 @@ func TestTweetWhichExceeding140CharactersIsNotPublished(t *testing.T) {
 
 	// Operation
 	var err error
-	err = service.PublishTweet(tweet)
+	_, err = service.PublishTweet(tweet)
 
 	// Validation
 	if err == nil {
@@ -105,4 +104,82 @@ func TestTweetWhichExceeding140CharactersIsNotPublished(t *testing.T) {
 	if err.Error() != "text exceeds 140 characters" {
 		t.Error("Expected error is text exceeds 140 characters")
 	}
+}
+func TestCanPublishAndRetrieveMoreThanOneTweet(t *testing.T) {
+
+	// Initialization
+	service.InitializeService()
+
+	var tweet, secondTweet *domain.Tweet
+
+	user := "francoagarcia"
+	text := "This is my first tweet"
+	secondText := "This is my second tweet"
+
+	tweet = domain.NewTweet(user, text)
+	secondTweet = domain.NewTweet(user, secondText)
+
+	// Operation
+	firstId, _ := service.PublishTweet(tweet)
+	secondId, _ := service.PublishTweet(secondTweet)
+
+	// Validation
+	publishedTweets := service.GetTweets()
+
+	if len(publishedTweets) != 2 {
+		t.Errorf("Expected size is 2 but was %d", len(publishedTweets))
+		return
+	}
+
+	firstPublishedTweet := publishedTweets[0]
+	secondPublishedTweet := publishedTweets[1]
+
+	if !isValidTweet(t, firstPublishedTweet, firstId, user, text) {
+		return
+	}
+
+	if !isValidTweet(t, secondPublishedTweet, secondId, user, secondText) {
+		return
+	}
+}
+
+func TestCanRetrieveTweetById(t *testing.T) {
+
+	// Initialization
+	service.InitializeService()
+
+	var tweet *domain.Tweet
+	var id int
+
+	user := "francoagarcia"
+	text := "This is my first tweet"
+
+	tweet = domain.NewTweet(user, text)
+
+	// Operation
+	id, _ = service.PublishTweet(tweet)
+
+	// Validation
+	publishedTweet := service.GetTweetByID(id)
+
+	isValidTweet(t, publishedTweet, id, user, text)
+}
+
+func isValidTweet(t *testing.T, tweet *domain.Tweet, id int, user, text string) bool {
+
+	if tweet.ID != id {
+		t.Errorf("Expected id is %v but was %v", id, tweet.ID)
+	}
+
+	if tweet.User != user && tweet.Text != text {
+		t.Errorf("Expected tweet is %s: %s \nbut is %s: %s", user, text, tweet.User, tweet.Text)
+		return false
+	}
+
+	if tweet.Date == nil {
+		t.Error("Expected date can't be nil")
+		return false
+	}
+
+	return true
 }
