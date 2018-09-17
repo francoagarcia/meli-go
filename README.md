@@ -16,3 +16,7 @@
 
 ## Agregar elementos al slice
 * `append(array, elementosQueQuieroAgregar)`, los agrega al final. 
+
+## Metodos
+* Función asociada a un método.
+* (t TipoStruct), se llama receiver.

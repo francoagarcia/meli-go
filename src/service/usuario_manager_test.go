@@ -7,10 +7,22 @@ import (
 	"github.com/francoagarcia/meli-go/src/service"
 )
 
+func TestNoSeEncuentraUsuarioPorID(t *testing.T) {
+	// Initialization
+	usuarioManager := service.NewUsuarioManager()
+
+	// Operation
+	usuarioRegistrado := usuarioManager.GetUsuarioByUsername("usernameNoExistente")
+
+	// Validation
+	if usuarioRegistrado != nil {
+		t.Error("Expected usuario must be nil")
+	}
+}
 func TestRegistrarUsuario(t *testing.T) {
 
 	// Initialization
-	service.InitializeService()
+	usuarioManager := service.NewUsuarioManager()
 	var usuario *domain.Usuario
 
 	var nombre string = "Franco"
@@ -21,10 +33,10 @@ func TestRegistrarUsuario(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	service.RegistrarUsuario(usuario)
+	usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
-	usuarioRegistrado := service.GetUsuarioByUsername(username)
+	usuarioRegistrado := usuarioManager.GetUsuarioByUsername(username)
 
 	if usuarioRegistrado == nil {
 		t.Error("Expected usuario can't be nil")
@@ -33,7 +45,7 @@ func TestRegistrarUsuario(t *testing.T) {
 
 func TestUsuarioSinNombreNoSeRegistra(t *testing.T) {
 	// Initialization
-	service.InitializeService()
+	usuarioManager := service.NewUsuarioManager()
 	var usuario *domain.Usuario
 
 	var nombre string = ""
@@ -44,7 +56,7 @@ func TestUsuarioSinNombreNoSeRegistra(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	err := service.RegistrarUsuario(usuario)
+	err := usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
 	if err == nil {
@@ -59,7 +71,7 @@ func TestUsuarioSinNombreNoSeRegistra(t *testing.T) {
 
 func TestUsuarioSinUsernameNoSeRegistra(t *testing.T) {
 	// Initialization
-	service.InitializeService()
+	usuarioManager := service.NewUsuarioManager()
 	var usuario *domain.Usuario
 
 	var nombre string = "Franco"
@@ -70,7 +82,7 @@ func TestUsuarioSinUsernameNoSeRegistra(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	err := service.RegistrarUsuario(usuario)
+	err := usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
 	if err == nil {
@@ -85,7 +97,7 @@ func TestUsuarioSinUsernameNoSeRegistra(t *testing.T) {
 
 func TestUsuarioSinMailNoSeRegistra(t *testing.T) {
 	// Initialization
-	service.InitializeService()
+	usuarioManager := service.NewUsuarioManager()
 	var usuario *domain.Usuario
 
 	var nombre string = "Franco"
@@ -96,7 +108,7 @@ func TestUsuarioSinMailNoSeRegistra(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	err := service.RegistrarUsuario(usuario)
+	err := usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
 	if err == nil {
@@ -111,7 +123,7 @@ func TestUsuarioSinMailNoSeRegistra(t *testing.T) {
 
 func TestUsuarioSinPasswordNoSeRegistra(t *testing.T) {
 	// Initialization
-	service.InitializeService()
+	usuarioManager := service.NewUsuarioManager()
 	var usuario *domain.Usuario
 
 	var nombre string = "Franco"
@@ -122,7 +134,7 @@ func TestUsuarioSinPasswordNoSeRegistra(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	err := service.RegistrarUsuario(usuario)
+	err := usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
 	if err == nil {

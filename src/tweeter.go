@@ -22,16 +22,15 @@ func main() {
 			defer c.ShowPrompt(true)
 
 			c.Print("Type your username: ")
-
 			user := c.ReadLine()
 
 			c.Print("Type your tweet: ")
-
 			text := c.ReadLine()
 
+			tweetManager := service.NewTweetManager()
 			tweet := domain.NewTweet(user, text)
 
-			id, err := service.PublishTweet(tweet)
+			id, err := tweetManager.PublishTweet(tweet)
 
 			if err == nil {
 				c.Printf("Tweet sent with id: %v\n", id)
@@ -50,7 +49,8 @@ func main() {
 
 			defer c.ShowPrompt(true)
 
-			tweet := service.GetTweet()
+			tweetManager := service.NewTweetManager()
+			tweet := tweetManager.GetTweet()
 
 			c.Println(tweet)
 
@@ -65,7 +65,8 @@ func main() {
 
 			defer c.ShowPrompt(true)
 
-			tweets := service.GetTweets()
+			tweetManager := service.NewTweetManager()
+			tweets := tweetManager.GetTweets()
 
 			c.Println(tweets)
 
@@ -81,12 +82,44 @@ func main() {
 			defer c.ShowPrompt(true)
 
 			c.Print("Type the id: ")
-
 			id, _ := strconv.Atoi(c.ReadLine())
-
-			tweet := service.GetTweetByID(id)
+			tweetManager := service.NewTweetManager()
+			tweet := tweetManager.GetTweetByID(id)
 
 			c.Println(tweet)
+
+			return
+		},
+	})
+
+	shell.AddCmd(&ishell.Cmd{
+		Name: "register",
+		Help: "Register a user",
+		Func: func(c *ishell.Context) {
+
+			defer c.ShowPrompt(true)
+
+			c.Print("Type your username: ")
+			username := c.ReadLine()
+
+			c.Print("Type your nombre: ")
+			nombre := c.ReadLine()
+
+			c.Print("Type your mail: ")
+			mail := c.ReadLine()
+
+			c.Print("Type your contrasenia: ")
+			contrasenia := c.ReadLine()
+
+			usuario := domain.NewUsuario(username, nombre, mail, contrasenia)
+			usuarioManager := service.NewUsuarioManager()
+			err := usuarioManager.RegistrarUsuario(usuario)
+
+			if err == nil {
+				c.Printf("Usuario registrado: %v\n", username)
+			} else {
+				c.Print("Error registrando usuario:", err)
+			}
 
 			return
 		},

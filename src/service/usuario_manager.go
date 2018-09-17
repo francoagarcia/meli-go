@@ -6,11 +6,19 @@ import (
 	"github.com/francoagarcia/meli-go/src/domain"
 )
 
-// Usuarios registrados
-var Usuarios []*domain.Usuario
+// UsuarioManager tweet manager
+type UsuarioManager struct {
+	Usuarios []*domain.Usuario
+}
+
+// NewUsuarioManager inicializar slices
+func NewUsuarioManager() *UsuarioManager {
+	usuarioManager := UsuarioManager{Usuarios: make([]*domain.Usuario, 0)}
+	return &usuarioManager
+}
 
 // RegistrarUsuario nuevo usuario
-func RegistrarUsuario(usuario *domain.Usuario) error {
+func (u *UsuarioManager) RegistrarUsuario(usuario *domain.Usuario) error {
 	if usuario.Nombre == "" {
 		return errors.New("nombre is required")
 	}
@@ -23,16 +31,22 @@ func RegistrarUsuario(usuario *domain.Usuario) error {
 	if usuario.Contrasenia == "" {
 		return errors.New("contrasenia is required")
 	}
-	Usuarios = append(Usuarios, usuario)
+	u.Usuarios = append(u.Usuarios, usuario)
 	return nil
 }
 
 // GetUsuarioByUsername buscar usuario por username
-func GetUsuarioByUsername(username string) *domain.Usuario {
-	for i := 0; i < len(Usuarios); i++ {
-		if Usuarios[i].Username == username {
-			return Usuarios[i]
+func (u *UsuarioManager) GetUsuarioByUsername(username string) *domain.Usuario {
+	for _, aUser := range u.Usuarios {
+		if aUser.Username == username {
+			return aUser
 		}
 	}
 	return nil
 }
+
+// IsUserRegistered validar si usuario está registrado por username
+//func IsUserRegistered(username string) bool {
+//	usuarioBuscado := GetUsuarioByUsername(username)
+//	return usuarioBuscado != nil
+//}
