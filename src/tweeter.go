@@ -10,7 +10,12 @@ import (
 
 func main() {
 
-	tweetManager := service.NewTweetManager()
+	quit := make(chan bool)
+
+	fileTweetWriter := service.NewFileTweetWriter()
+	tweetWriter := service.NewChannelTweetWriter(fileTweetWriter)
+
+	tweetManager := service.NewTweetManager(tweetWriter)
 
 	shell := ishell.New()
 	shell.SetPrompt("Tweeter >> ")
@@ -24,16 +29,13 @@ func main() {
 			defer c.ShowPrompt(true)
 
 			c.Print("Type your username: ")
-
 			user := c.ReadLine()
 
 			c.Print("Type your tweet: ")
-
 			text := c.ReadLine()
 
 			tweet := domain.NewTextTweet(user, text)
-
-			id, err := tweetManager.PublishTweet(tweet)
+			id, err := tweetManager.PublishTweet(tweet, quit)
 
 			if err == nil {
 				c.Printf("Tweet sent with id: %v\n", id)
@@ -53,20 +55,16 @@ func main() {
 			defer c.ShowPrompt(true)
 
 			c.Print("Type your username: ")
-
 			user := c.ReadLine()
 
 			c.Print("Type your tweet: ")
-
 			text := c.ReadLine()
 
 			c.Print("Type the url of your image: ")
-
 			url := c.ReadLine()
 
 			tweet := domain.NewImageTweet(user, text, url)
-
-			id, err := tweetManager.PublishTweet(tweet)
+			id, err := tweetManager.PublishTweet(tweet, quit)
 
 			if err == nil {
 				c.Printf("Tweet sent with id: %v\n", id)
@@ -96,7 +94,7 @@ func main() {
 
 			quoteTweet := tweetManager.GetTweetByID(id)
 			tweet := domain.NewQuoteTweet(user, text, quoteTweet)
-			id, err := tweetManager.PublishTweet(tweet)
+			id, err := tweetManager.PublishTweet(tweet, quit)
 
 			if err == nil {
 				c.Printf("Tweet sent with id: %v\n", id)
@@ -146,7 +144,6 @@ func main() {
 			defer c.ShowPrompt(true)
 
 			c.Print("Type the id: ")
-
 			id, _ := strconv.Atoi(c.ReadLine())
 
 			tweet := tweetManager.GetTweetByID(id)
@@ -165,7 +162,6 @@ func main() {
 			defer c.ShowPrompt(true)
 
 			c.Print("Type the user: ")
-
 			user := c.ReadLine()
 
 			count := tweetManager.CountTweetsByUser(user)
@@ -184,45 +180,11 @@ func main() {
 			defer c.ShowPrompt(true)
 
 			c.Print("Type the user: ")
-
 			user := c.ReadLine()
 
 			tweets := tweetManager.GetTweetsByUser(user)
 
 			c.Println(tweets)
-
-			return
-		},
-	})
-
-	shell.AddCmd(&ishell.Cmd{
-		Name: "register",
-		Help: "Register a user",
-		Func: func(c *ishell.Context) {
-
-			defer c.ShowPrompt(true)
-
-			c.Print("Type your username: ")
-			username := c.ReadLine()
-
-			c.Print("Type your nombre: ")
-			nombre := c.ReadLine()
-
-			c.Print("Type your mail: ")
-			mail := c.ReadLine()
-
-			c.Print("Type your contrasenia: ")
-			contrasenia := c.ReadLine()
-
-			usuario := domain.NewUsuario(username, nombre, mail, contrasenia)
-			usuarioManager := service.NewUsuarioManager()
-			err := usuarioManager.RegistrarUsuario(usuario)
-
-			if err == nil {
-				c.Printf("Usuario registrado: %v\n", username)
-			} else {
-				c.Print("Error registrando usuario:", err)
-			}
 
 			return
 		},
