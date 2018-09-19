@@ -3,6 +3,8 @@ package domain
 import (
 	"fmt"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 // Tweet interfaz
@@ -10,8 +12,7 @@ type Tweet interface {
 	GetUser() string
 	GetText() string
 	GetDate() *time.Time
-	GetID() int
-	SetID(int)
+	GetID() *uuid.UUID
 	PrintableTweet() string
 	String() string
 }
@@ -25,13 +26,14 @@ type TextTweet struct {
 	User string     `json:"user"`
 	Text string     `json:"text"`
 	Date *time.Time `json:"date"`
-	ID   int        `json:"id"`
+	ID   *uuid.UUID `json:"id"`
 }
 
 // NewTextTweet nuevo tweet
 func NewTextTweet(user, text string) *TextTweet {
 	var date = time.Now()
-	var tweet = TextTweet{User: user, Text: text, Date: &date}
+	var uuid, _ = uuid.NewV4()
+	var tweet = TextTweet{User: user, Text: text, Date: &date, ID: &uuid}
 	return &tweet
 }
 
@@ -51,13 +53,8 @@ func (t *TextTweet) GetDate() *time.Time {
 }
 
 // GetID obtener Id del tweet
-func (t *TextTweet) GetID() int {
+func (t *TextTweet) GetID() *uuid.UUID {
 	return t.ID
-}
-
-// SetID setear id del tweet
-func (t *TextTweet) SetID(id int) {
-	t.ID = id
 }
 
 // PrintableTweet retorna string con tweet
@@ -71,7 +68,7 @@ func (t *TextTweet) String() string {
 
 //Equals compare current tweet to another
 func (t *TextTweet) Equals(another Tweet) bool {
-	return t.GetID() == another.GetID()
+	return uuid.Equal(*t.GetID(), *another.GetID())
 }
 
 /******************************

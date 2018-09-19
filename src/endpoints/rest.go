@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/satori/go.uuid"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,10 +36,10 @@ func (rest *Rest) Execute() {
 
 // TweetResource resource tweets
 type TweetResource struct {
-	User string `json:"user"`
-	Text string `json:"text"`
-	URL  string `json:"url"`
-	ID   int    `json:"id"`
+	User string    `json:"user"`
+	Text string    `json:"text"`
+	URL  string    `json:"url"`
+	ID   uuid.UUID `json:"id"`
 }
 
 func (rest *Rest) publishTextTweet(c *gin.Context) {
@@ -50,7 +52,7 @@ func (rest *Rest) publishTextTweet(c *gin.Context) {
 	id, err := rest.manager.PublishTextTweet(tweet.User, tweet.Text)
 
 	if err == nil {
-		c.JSON(http.StatusOK, struct{ ID int }{id})
+		c.JSON(http.StatusOK, struct{ ID uuid.UUID }{*id})
 	} else {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -66,7 +68,7 @@ func (rest *Rest) publishImageTweet(c *gin.Context) {
 	id, err := rest.manager.PublishImageTweet(tweet.User, tweet.Text, tweet.URL)
 
 	if err == nil {
-		c.JSON(http.StatusOK, struct{ ID int }{id})
+		c.JSON(http.StatusOK, struct{ ID uuid.UUID }{*id})
 	} else {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -79,10 +81,10 @@ func (rest *Rest) publishQuotedTweet(c *gin.Context) {
 		return
 	}
 
-	id, err := rest.manager.PublishQuotedTweet(tweet.User, tweet.Text, tweet.ID)
+	id, err := rest.manager.PublishQuotedTweet(tweet.User, tweet.Text, &tweet.ID)
 
 	if err == nil {
-		c.JSON(http.StatusOK, struct{ ID int }{id})
+		c.JSON(http.StatusOK, struct{ ID uuid.UUID }{*id})
 	} else {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -100,13 +102,13 @@ func (rest *Rest) getTweets(c *gin.Context) {
 }
 
 func (rest *Rest) getTweetByID(c *gin.Context) {
-	ID, err := strconv.Atoi(c.Param("id"))
+	ID, err := uuid.FromString(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	tweetBuscado := rest.manager.GetTweetByID(ID)
+	tweetBuscado := rest.manager.GetTweetByID(&ID)
 
 	c.JSON(http.StatusOK, tweetBuscado)
 }

@@ -3,6 +3,8 @@ package endpoints
 import (
 	"fmt"
 
+	"github.com/satori/go.uuid"
+
 	"github.com/francoagarcia/meli-go/src/domain"
 	"github.com/francoagarcia/meli-go/src/service"
 )
@@ -23,24 +25,24 @@ func NewManager(tweetManager *service.TweetManager) *Manager {
 }
 
 // PublishTextTweet publish new text tweet
-func (manager *Manager) PublishTextTweet(user, text string) (id int, err error) {
+func (manager *Manager) PublishTextTweet(user, text string) (id *uuid.UUID, err error) {
 	tweet := domain.NewTextTweet(user, text)
 	id, err = manager.tweetManager.PublishTweet(tweet)
 	return
 }
 
 // PublishImageTweet publish new image tweet
-func (manager *Manager) PublishImageTweet(user, text, url string) (id int, err error) {
+func (manager *Manager) PublishImageTweet(user, text, url string) (id *uuid.UUID, err error) {
 	tweet := domain.NewImageTweet(user, text, url)
 	id, err = manager.tweetManager.PublishTweet(tweet)
 	return
 }
 
 // PublishQuotedTweet publish new quoted tweet
-func (manager *Manager) PublishQuotedTweet(user, text string, idQuoted int) (id int, err error) {
+func (manager *Manager) PublishQuotedTweet(user, text string, idQuoted *uuid.UUID) (id *uuid.UUID, err error) {
 	quoteTweet := manager.tweetManager.GetTweetByID(idQuoted)
 	if quoteTweet == nil {
-		return 0, fmt.Errorf("PublishQuotedTweet - tweet not found - id [%b]", idQuoted)
+		return nil, fmt.Errorf("PublishQuotedTweet - tweet not found - id [%s]", idQuoted.String())
 	}
 	tweet := domain.NewQuoteTweet(user, text, quoteTweet)
 	id, err = manager.tweetManager.PublishTweet(tweet)
@@ -58,7 +60,7 @@ func (manager *Manager) GetTweets() []domain.Tweet {
 }
 
 // GetTweetByID obtener tweet por id
-func (manager *Manager) GetTweetByID(id int) domain.Tweet {
+func (manager *Manager) GetTweetByID(id *uuid.UUID) domain.Tweet {
 	return manager.tweetManager.GetTweetByID(id)
 }
 

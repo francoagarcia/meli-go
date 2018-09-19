@@ -3,6 +3,8 @@ package service
 import (
 	"errors"
 
+	"github.com/satori/go.uuid"
+
 	"github.com/francoagarcia/meli-go/src/domain"
 )
 
@@ -21,20 +23,19 @@ func NewTweetManager() *TweetManager {
 }
 
 // PublishTweet publicar tweet
-func (t *TweetManager) PublishTweet(tweet domain.Tweet) (int, error) {
+func (t *TweetManager) PublishTweet(tweet domain.Tweet) (*uuid.UUID, error) {
 	if tweet.GetUser() == "" {
-		return 0, errors.New("user is required")
+		return nil, errors.New("user is required")
 	}
 	if tweet.GetText() == "" {
-		return 0, errors.New("text is required")
+		return nil, errors.New("text is required")
 	}
 	if len(tweet.GetText()) > 140 {
-		return 0, errors.New("text exceeds 140 characters")
+		return nil, errors.New("text exceeds 140 characters")
 	}
 	//if !service.IsUserRegistered(tweet.User) {
 	//	return 0, errors.New("user not registered cannot tweet")
 	//}
-	tweet.SetID(len(t.Tweets) + 1)
 	t.LastPublished = tweet
 	t.Tweets = append(t.Tweets, tweet)
 	t.TweetsMap[tweet.GetUser()] = append(t.TweetsMap[tweet.GetUser()], tweet)
@@ -52,9 +53,9 @@ func (t *TweetManager) GetTweets() []domain.Tweet {
 }
 
 // GetTweetByID obtener tweet por id
-func (t *TweetManager) GetTweetByID(id int) domain.Tweet {
+func (t *TweetManager) GetTweetByID(id *uuid.UUID) domain.Tweet {
 	tweetBuscado := findBy(t.GetTweets(), func(tweet domain.Tweet) bool {
-		return tweet.GetID() == id
+		return uuid.Equal(*tweet.GetID(), *id)
 	})
 	if len(tweetBuscado) > 0 {
 		return tweetBuscado[0]

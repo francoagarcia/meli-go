@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/francoagarcia/meli-go/src/domain"
+	"github.com/francoagarcia/meli-go/src/service"
 )
 
 func TestNoSeEncuentraUsuarioPorID(t *testing.T) {
@@ -55,7 +56,7 @@ func TestUsuarioSinNombreNoSeRegistra(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	err := usuarioManager.RegistrarUsuario(usuario)
+	_, err := usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
 	if err == nil {
@@ -81,7 +82,7 @@ func TestUsuarioSinUsernameNoSeRegistra(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	err := usuarioManager.RegistrarUsuario(usuario)
+	_, err := usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
 	if err == nil {
@@ -107,7 +108,7 @@ func TestUsuarioSinMailNoSeRegistra(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	err := usuarioManager.RegistrarUsuario(usuario)
+	_, err := usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
 	if err == nil {
@@ -133,7 +134,7 @@ func TestUsuarioSinPasswordNoSeRegistra(t *testing.T) {
 	usuario = domain.NewUsuario(username, nombre, mail, contrasenia)
 
 	// Operation
-	err := usuarioManager.RegistrarUsuario(usuario)
+	_, err := usuarioManager.RegistrarUsuario(usuario)
 
 	// Validation
 	if err == nil {

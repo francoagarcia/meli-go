@@ -1,9 +1,8 @@
 package endpoints
 
 import (
-	"strconv"
-
 	"github.com/abiosoft/ishell"
+	uuid "github.com/satori/go.uuid"
 )
 
 // Cmd implements Endpoint
@@ -134,12 +133,12 @@ func (cmd *Cmd) publishQuotedTweet(c *ishell.Context) {
 	text := c.ReadLine()
 
 	c.Print("Type the id of the tweet you want to quote: ")
-	id, _ := strconv.Atoi(c.ReadLine())
+	id, _ := uuid.FromString(c.ReadLine())
 
-	id, err := cmd.manager.PublishQuotedTweet(user, text, id)
+	_, err := cmd.manager.PublishQuotedTweet(user, text, &id)
 
 	if err == nil {
-		c.Printf("Tweet sent with id: %v\n", id)
+		c.Printf("Tweet sent with id: %v\n", id.String())
 	} else {
 		c.Print("Error publishing tweet:", err)
 	}
@@ -175,9 +174,9 @@ func (cmd *Cmd) showTweetByID(c *ishell.Context) {
 
 	c.Print("Type the id: ")
 
-	id, _ := strconv.Atoi(c.ReadLine())
+	id, _ := uuid.FromString(c.ReadLine())
 
-	tweet := cmd.manager.GetTweetByID(id)
+	tweet := cmd.manager.GetTweetByID(&id)
 
 	c.Println(tweet)
 
