@@ -22,10 +22,10 @@ type Tweet interface {
 
 // TextTweet struct
 type TextTweet struct {
-	User string
-	Text string
-	Date *time.Time
-	ID   int
+	User string     `json:"user"`
+	Text string     `json:"text"`
+	Date *time.Time `json:"date"`
+	ID   int        `json:"id"`
 }
 
 // NewTextTweet nuevo tweet
@@ -81,7 +81,7 @@ func (t *TextTweet) Equals(another Tweet) bool {
 // ImageTweet struct
 type ImageTweet struct {
 	TextTweet
-	URL string
+	URL string `json:"url"`
 }
 
 // NewImageTweet nuevo tweet
@@ -103,7 +103,7 @@ func (t *ImageTweet) PrintableTweet() string {
 // QuoteTweet struct
 type QuoteTweet struct {
 	TextTweet
-	QuotedTweet Tweet
+	QuotedTweet Tweet `json:"quoted_tweet"`
 }
 
 // NewQuoteTweet nuevo tweet

@@ -2,10 +2,10 @@ package domain
 
 // Usuario struct
 type Usuario struct {
-	Username    string
-	Nombre      string
-	Mail        string
-	Contrasenia string
+	Username    string `json:"username"`
+	Nombre      string `json:"nombre"`
+	Mail        string `json:"mail"`
+	Contrasenia string `json:"contrasenia"`
 }
 
 // NewUsuario nuevo tweet

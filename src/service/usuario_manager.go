@@ -18,21 +18,21 @@ func NewUsuarioManager() *UsuarioManager {
 }
 
 // RegistrarUsuario nuevo usuario
-func (u *UsuarioManager) RegistrarUsuario(usuario *domain.Usuario) error {
+func (u *UsuarioManager) RegistrarUsuario(usuario *domain.Usuario) (*domain.Usuario, error) {
 	if usuario.Nombre == "" {
-		return errors.New("nombre is required")
+		return nil, errors.New("nombre is required")
 	}
 	if usuario.Mail == "" {
-		return errors.New("mail is required")
+		return nil, errors.New("mail is required")
 	}
 	if usuario.Username == "" {
-		return errors.New("username is required")
+		return nil, errors.New("username is required")
 	}
 	if usuario.Contrasenia == "" {
-		return errors.New("contrasenia is required")
+		return nil, errors.New("contrasenia is required")
 	}
 	u.Usuarios = append(u.Usuarios, usuario)
-	return nil
+	return usuario, nil
 }
 
 // GetUsuarioByUsername buscar usuario por username

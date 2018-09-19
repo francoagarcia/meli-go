@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"sort"
 
 	"github.com/francoagarcia/meli-go/src/domain"
 )
@@ -50,18 +49,6 @@ func (t *TweetManager) GetTweet() domain.Tweet {
 // GetTweets obtener todos los tweets
 func (t *TweetManager) GetTweets() []domain.Tweet {
 	return t.Tweets
-}
-
-// MapToSlice arma una lista con todos los tweets del map y los ordena por fecha
-func (t *TweetManager) MapToSlice() []domain.Tweet {
-	allTweets := make([]domain.Tweet, 0)
-	for _, tweetsDeUsuario := range t.TweetsMap {
-		allTweets = append(allTweets, tweetsDeUsuario...)
-	}
-	sort.Slice(allTweets, func(i, j int) bool {
-		return allTweets[i].GetDate().Before(*allTweets[j].GetDate())
-	})
-	return allTweets
 }
 
 // GetTweetByID obtener tweet por id

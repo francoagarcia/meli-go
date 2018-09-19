@@ -4,29 +4,8 @@ import (
 	"testing"
 
 	"github.com/francoagarcia/meli-go/src/domain"
-	"github.com/francoagarcia/meli-go/src/service"
 )
 
-func TestMapToSlice(t *testing.T) {
-	// Initialization
-	tweetManager := service.NewTweetManager()
-
-	tweet1 := domain.NewTextTweet("francoagarcia", "text")
-	tweetManager.PublishTweet(tweet1)
-	tweet2 := domain.NewTextTweet("francoagarcia", "text2")
-	tweetManager.PublishTweet(tweet2)
-	tweet3 := domain.NewTextTweet("juanchopanza", "asdfasd asdfa")
-	tweetManager.PublishTweet(tweet3)
-
-	// Operation
-	//tweets := tweetManager.GetTweets()
-	//mapToSliceTweets := tweetManager.MapToSlice()
-
-	// Validation
-	// if !tweets[0].Equals(mapToSliceTweets[0]) {
-	// 	t.Errorf("Expected both tweets been the same. Tweet 1: [%b]. Tweet 2: [%b]", tweets[0].GetID(), mapToSliceTweets[0].GetID())
-	// }
-}
 func TestNoSeEncuentraTweet(t *testing.T) {
 
 	// Initialization

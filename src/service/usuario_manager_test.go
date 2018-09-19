@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/francoagarcia/meli-go/src/domain"
-	"github.com/francoagarcia/meli-go/src/service"
 )
 
 func TestNoSeEncuentraUsuarioPorID(t *testing.T) {
