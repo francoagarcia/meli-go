@@ -1,0 +1,102 @@
+Arquitectura y buenas prácticas
+
+Santiago Risaro - Nayla Portas - Sebastián Konikoff 
+Desarrolladores GO en Grupo Esfera
+@grupoesfera
+
+* 
+
+.image http://peter.bourgon.org/go-for-industrial-programming/rakyll.png 250 _
+.image http://peter.bourgon.org/go-for-industrial-programming/holman.png 250 _
+
+* 
+
+.image https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/147/shrug_1f937.png 250 _
+
+Dudá como dudan los expertos
+
+* Como estructurar el código
+
+La única constatnte es el cambio, organizá tu código para que sea fácil de cambiar
+Pero, sobre todo, fácil de *borrar*
+
+- Si la aplicación es pequeña, usá un sólo paquete
+- Si tenés muchos binarios, agrupalos en una carpeta
+- Si tenés "cosas" que no son código GO, agrupalos en una carpeta, o creá una carpeta específica para el código GO
+- Si necesitás más de un paquete, organizalos en base al dominio, no a la arquitectura (paquete usuarios, BUENO; paquete servicios, MALO)
+- Si usás un framework, seguí los lineamientos del framework
+- Si la aplicación es pequeña, usá un sólo paquete
+
+* Nombres
+
+- ¡Seguí las convenciones del lenguaje!
+- Creá tu propio conjunto de convenciones con tu equipo, y síganlas
+- No tartamudees
+
+    connection.NewConnection() => connection.New()
+    repository.UserRepository => repository.User
+
+: Las convenciones del equipo no pueden pisar las convenciones del lenguaje
+
+* Interfaces
+
+- Usá interfaces para dividir responsabilidades
+- Dependé de interfaces, no de implementaciones
+- Inyectá tus dependencias (¡No necesitás un framework para esto!)
+- Usá interfaces para dividir tu sistema en capas
+
+: Interfaz como "la parte visible" de la capa de "abajo"
+
+* Favorecé la lectura, no la escritura
+
+    func BuildContainer() *dig.Container {  
+        container := dig.New()
+        container.Provide(NewConfig)
+        container.Provide(ConnectDatabase)
+        container.Provide(NewPersonRepository)
+        container.Provide(NewPersonService)
+        container.Provide(NewServer)
+        return container
+    }
+
+    func main() {  
+        container := BuildContainer()
+        if err := container.Invoke(func(server *Server) {
+            server.Run()
+        }); err != nil {
+            panic(err)
+        }
+    }
+¿Qué hace este código?
+
+* Favorecé la lectura, no la escritura
+
+    func main() {  
+        cfg := GetConfig()
+        db, err := ConnectDatabase(cfg.URN)
+        if err != nil {
+            panic(err)
+        }
+        repo := NewPersonRepository(db)
+        service := NewPersonService(cfg.AccessToken, repo)
+        server := NewServer(cfg.ListenAddr, service)
+        server.Run()
+    }
+
+Y este ¿qué hace?
+
+* Evitá la magia
+
+.image magia.png 140 _
+
+El código complejo no es legible
+Las soluciones mágicas no son mantenibles
+Debuggear es más difícil que programar
+
+* Make it Work, Make it Right, Make it Fast
+
+* Diseñalo pensando en como vas a probarlo...
+
+* Y, más importante, en como vas a arreglarlo cuando se rompa
+
+* Porque se va a caer

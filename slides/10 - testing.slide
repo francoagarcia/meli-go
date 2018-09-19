@@ -1,0 +1,113 @@
+Testing
+
+Santiago Risaro - Nayla Portas - Sebastián Konikoff
+Desarrolladores GO en Grupo Esfera
+@grupoesfera
+
+* Pirámide de Pruebas
+
+.image https://www.parasoft.com/sites/default/files/testingpyramid-blue.png 500 _
+
+* Pruebas unitarias
+
+- *MOCK* *EVERYTHING*
+- Divide and conquer
+- Módulos independientes son más fáciles de probar
+- Interfaces como punto de partida al mock
+
+: Solo mockear codigo propio
+
+* Pruebas unitarias
+
+    import (
+        "testing"
+        "github.com/stretchr/testify/assert"
+        "github.com/stretchr/testify/mock"
+    )
+
+    func TestStartShouldReturnOk(t *testing.T) {
+        // Initialization
+        testCtx := setupServiceProviderTest()
+        testCtx.engine.On("Match",
+            mock.AnythingOfType("*domain.Context"),
+            mock.AnythingOfType("*serviceacquirer.Visa")).
+            Return(nil)
+
+        data := inputdata.StartData{Acquirer: "visa"}
+        expected := domain.Response{Result: "Ok", Response: domain.Response{}}
+
+        // Operation
+        response, errStart := testCtx.serviceProvider.Start(testCtx.context, data)
+
+        // Validation
+        assert.Nil(t, errStart)
+        assert.Equal(t, expected, response)
+    }
+
+* Pruebas unitarias y cobertura
+
+.image images/cover.png
+
+- 100% de cobertura no es 0% de bugs
+
+* Pruebas de integración
+
+- Utilizar el mismo framework que para pruebas unitarias
+- Deben poder correr en *todos* los ambientes
+- Deben poder ejecutarse en paralelo
+- Cada test debe asegurar el estado inicial de su set de datos
+- Si no lo podes compartir, aislalo y mockealo
+- *Ojo* con las pruebas de procesos que interactúan con el exterior (ej: mails)
+
+* Pruebas de aceptacion / E2E
+
+- Validan el comportamiento de todo el sistema
+- No son lo mismo que pruebas de interfaz de usuario
+- Pueden estar escritas en GO, o utilizando frameworks que permitan que usuarios no técnicos definan los casos de prueba
+
+Para facilitar la redacción de pruebas por parte de usuarios no técnicos existen lenguajes como Gherkin, y frameworks que lo implementan como Godog
+
+.image https://raw.githubusercontent.com/DATA-DOG/godog/master/logo.png 280 _
+
+* Pruebas con Godog
+
+.image images/godog-feature.png 230 _
+
+    func FeatureAcquirerReportContext(s *godog.Suite) {
+
+      execution := new(steps.AcceptanceTestContext)
+
+      s.BeforeScenario(execution.InitializeDB)
+
+      s.Step(`^the acquirer "([^"]*)"$`, execution.TheAcquirer)
+      s.Step(`^the "([^"]*)" table is populated with "([^"]*)"$`, execution.TheTableIsPopulatedWith)
+      s.Step(`^I get the link of the "([^"]*)" report for dates between "([^"]*)" and "([^"]*)"$`,
+          execution.GetTheLinkOfTheReportForDatesBetweenAnd)
+      s.Step(`^the report should be equal to "([^"]*)"$`, execution.TheReportShouldBeEqualTo)
+    }
+
+* Benchmark
+
+Utilizar el framework provisto por GO
+
+    func BenchmarkPublishTweetWithFileTweetWriter(b *testing.B) {
+
+        // Initialization
+        fileTweetWriter := service.NewFileTweetWriter()
+        tweetWriter := service.NewChannelTweetWriter(fileTweetWriter)
+        tweetManager := service.NewTweetManager(tweetWriter)
+
+        quit := make(chan bool)
+        tweet := domain.NewTextTweet("grupoesfera", "This is my tweet")
+
+        // Operation
+        for n := 0; n < b.N; n++ {
+            tweetManager.PublishTweet(tweet, quit)
+        }
+    }
+
+: El N no se toca dentro de la ejecucion de la funcion
+
+    go test -bench=.
+
+* rebrand.ly/meli-2018-encuesta-go
