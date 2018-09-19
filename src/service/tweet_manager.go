@@ -33,9 +33,6 @@ func (t *TweetManager) PublishTweet(tweet domain.Tweet) (*uuid.UUID, error) {
 	if len(tweet.GetText()) > 140 {
 		return nil, errors.New("text exceeds 140 characters")
 	}
-	//if !service.IsUserRegistered(tweet.User) {
-	//	return 0, errors.New("user not registered cannot tweet")
-	//}
 	t.LastPublished = tweet
 	t.Tweets = append(t.Tweets, tweet)
 	t.TweetsMap[tweet.GetUser()] = append(t.TweetsMap[tweet.GetUser()], tweet)
