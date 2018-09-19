@@ -11,12 +11,14 @@ type TweetManager struct {
 	LastPublished domain.Tweet
 	Tweets        []domain.Tweet
 	TweetsMap     map[string][]domain.Tweet
+	tweetWriter   *ChannelTweetWriter
 }
 
 // NewTweetManager inicializar slices
 func NewTweetManager(tweetWriter *ChannelTweetWriter) *TweetManager {
 	tweetManager := TweetManager{Tweets: make([]domain.Tweet, 0)}
 	tweetManager.TweetsMap = make(map[string][]domain.Tweet)
+	tweetManager.tweetWriter = tweetWriter
 	return &tweetManager
 }
 
@@ -31,13 +33,11 @@ func (t *TweetManager) PublishTweet(tweet domain.Tweet, quit chan bool) (int, er
 	if len(tweet.GetText()) > 140 {
 		return 0, errors.New("text exceeds 140 characters")
 	}
-	//if !service.IsUserRegistered(tweet.User) {
-	//	return 0, errors.New("user not registered cannot tweet")
-	//}
 	tweet.SetID(len(t.Tweets) + 1)
 	t.LastPublished = tweet
 	t.Tweets = append(t.Tweets, tweet)
 	t.TweetsMap[tweet.GetUser()] = append(t.TweetsMap[tweet.GetUser()], tweet)
+	t.tweetWriter.Writer.Write(tweet)
 	return tweet.GetID(), nil
 }
 

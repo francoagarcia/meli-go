@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/francoagarcia/meli-go/src/domain"
 )
@@ -36,17 +37,29 @@ func (writer *MemoryTweetWriter) Write(tweet domain.Tweet) {
 
 // FileTweetWriter file tweet writer
 type FileTweetWriter struct {
-	Tweets []domain.Tweet
+	file *os.File
 }
 
 // NewFileTweetWriter crear NewFileTweetWriter
 func NewFileTweetWriter() *FileTweetWriter {
-	return &FileTweetWriter{Tweets: make([]domain.Tweet, 0)}
+	file, _ := os.OpenFile(
+		"tweets.txt",
+		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
+		0666,
+	)
+
+	writer := new(FileTweetWriter)
+	writer.file = file
+
+	return writer
 }
 
 // WriteTweet escribir tweet en canal
 func (writer *FileTweetWriter) Write(tweet domain.Tweet) {
-
+	if writer.file != nil {
+		byteSlice := []byte(tweet.PrintableTweet() + "\n")
+		writer.file.Write(byteSlice)
+	}
 }
 
 /*****************************************
