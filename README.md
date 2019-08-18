@@ -1,10 +1,51 @@
-# meli-go
+# Go
+
+## Go present
+* Dentro de la carpeta slides/, ejecutar `present`.
+
+## Packages
+* package main -> es ejecutable que contiene la funcion main
+* todos los archivos en una carpeta pertenecen al mismo package. 
+* los packages pueden no coincidir con el nombre de la carpeta
+
+## Accesibilidad a variables y funciones
+* Es a nivel de package, no de archivo. 
+* Las variables o funciones que comienza con mayuscula son Exports, las minisculas son privadas.
+
+## Tipos de datos
+* Go puede infierir el tipo de dato, pero una vez inferido no puedes asignarle algo de otro tipo.
+* Go tiene defaults para las variables declaras. Por ejemplo: `var i int`, los integers tienen como default 0.
+* int, int8, int16, int32, int64 => int es alias de int32 o int64 que lo infiere segun la maquina.
+* Tipo de dato `rune` es un alias de int32. Representa un code point de Unicode.
+
+## Metodos y variables
+* Funciones con multiple retorno
+```go
+func funcionMultipleRetorno(x, y string) (string, string) {
+    return y, x
+}
+func funcionMultipleRetornoConNombre(x, y string) (resultX string, resultY string) {
+    resultX := x
+    resultY := y
+    return
+}
+```
+* Identificadores vacíos: `var _, b2 string = some("stuff")` se puede declarar una variable *ignorada*, no me interesa lo que venga ahí.
+
+## Errores
+* No hay exceptions.
+
+```go
+if divisor == 0 {
+    return fmt.Errorf("no se puede usar %v como divisor", divisor) //o errors.New()
+}
+```
 
 ## Arrays
 * Arrays son de longitud fija.
 
 ## Slices
-* Slice, es un puntero a un array, por lo tantosu zero-value es un nil. Es un array sin longitud fija.
+* Slice, es un puntero a un array, por lo tanto su zero-value es un nil. Es un array sin longitud fija.
 * `make()`, crea punteros a cosas.
 * `a := make([]int, 0)`, crea un slice vacio.
 * longitud: `len()`, nro de elemento del array.
